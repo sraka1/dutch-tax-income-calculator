@@ -216,6 +216,9 @@ let calcComponent = {
         salary.generalCredit = socialCredit * getGeneralCredit(this.year, salary.taxableYear, salary.older);
         
         salary.taxableYearAfterGeneralCredit = salary.taxableYear-salary.generalCredit;
+        if (salary.taxableYearAfterGeneralCredit < 0) {
+          salary.taxableYearAfterGeneralCredit = 0;
+        }
         salary.payrollTax = -1 * getPayrollTax(this.year, salary.taxableYearAfterGeneralCredit);
         let socialTaxBase = salary.taxableYear - 0.25*salary.taxableYear;
         salary.socialTax = (salary.socialSecurity) ? -1 * getSocialTax(this.year, socialTaxBase, salary.older) : 0;
