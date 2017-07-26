@@ -3,9 +3,9 @@ normiranec-tax-income-calculator
 
 > Normiranec Tax Income Calculator with AngularJS
 
-Forked from dutch-tax-income-calculator
+Forked from stevermeister/dutch-tax-income-calculator.
 
-You can test it here - 
+You can test it here [https://sraka1.github.io/normiranec-tax-income-calculator/](https://sraka1.github.io/normiranec-tax-income-calculator/)
 
 <p align="center">
   <img src="http://i63.tinypic.com/15bk1k.png" alt="dutch-tax-income-calculator"/>
