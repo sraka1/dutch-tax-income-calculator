@@ -43,16 +43,16 @@
       </md-content>
       <md-content>
         <div layout="column" layout-margin>
-          <md-checkbox ng-model="$ctrl.salary.allowance" aria-label="Gross salary provided includes 8% of holiday allowance" title="Gross salary provided includes 8% of holiday allowance" disabled>
+          <md-checkbox ng-model="$ctrl.salary.allowance" aria-label="Gross salary provided includes 8% of holiday allowance" title="Gross salary provided includes 8% of holiday allowance" disabled ng-show="false">
             Holiday allowance included
           </md-checkbox>
-          <md-checkbox ng-model="$ctrl.salary.socialSecurity" aria-label="Social security in the Netherlands" title="Social security in the Netherlands">
+          <md-checkbox ng-model="$ctrl.salary.socialSecurity" aria-label="Social security in the Netherlands" title="Social security in the Netherlands" ng-show="false">
             Social security
           </md-checkbox>
-          <md-checkbox ng-model="$ctrl.salary.older" aria-label="Retirement age or older" title="Retirement age or older">
+          <md-checkbox ng-model="$ctrl.salary.older" aria-label="Retirement age or older" title="Retirement age or older" ng-show="false">
             65 years or older
           </md-checkbox>
-          <md-checkbox ng-model="$ctrl.ruling.checked" aria-label="Tax benefit rule for up-to 30% of gross salary" title="Tax benefit rule for up-to 30% of gross salary">
+          <md-checkbox ng-model="$ctrl.ruling.checked" aria-label="Tax benefit rule for up-to 30% of gross salary" title="Tax benefit rule for up-to 30% of gross salary" ng-show="false">
             30% ruling
           </md-checkbox>
           <!--<md-radio-group ng-model="$ctrl.ruling.choice" ng-disabled="!$ctrl.ruling.checked">

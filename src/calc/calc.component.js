@@ -42,7 +42,7 @@ let calcComponent = {
         'name': 'grossMonth',
         'sign': '',
         'title': 'Month Gross Income',
-        'checked': !!+$location.search().grossMonth || false
+        'checked': !!+$location.search().grossMonth || true
       },
       {
         'name': 'grossWeek',
@@ -66,7 +66,7 @@ let calcComponent = {
         'name': 'taxFreeYear',
         'sign': '-',
         'title': 'Tax Free Income',
-        'checked': !!+$location.search().taxFreeYear || false
+        'checked': !!+$location.search().taxFreeYear || true
       },
       {
         'name': 'taxFree',
@@ -81,11 +81,18 @@ let calcComponent = {
         'checked': !!+$location.search().taxableYear || true
       },
       {
+        'name': 'taxableYearAfterGeneralCredit',
+        'sign': '',
+        'title': 'Taxable Income (after General Credit)',
+        'checked': !!+$location.search().taxableYearAfterGeneralCredit || true
+      },
+      {
         'name': 'payrollTax',
         'sign': '',
         'title': 'Payroll Tax',
         'checked': !!+$location.search().payrollTax || true
       },
+      
       {
         'name': 'socialTax',
         'sign': '',
@@ -96,13 +103,13 @@ let calcComponent = {
         'name': 'generalCredit',
         'sign': '+',
         'title': 'General Tax Credit',
-        'checked': !!+$location.search().generalCredit || true
+        'checked': !!+$location.search().generalCredit || false
       },
       {
         'name': 'labourCredit',
         'sign': '+',
         'title': 'Labour Tax Credit',
-        'checked': !!+$location.search().labourCredit || true
+        'checked': !!+$location.search().labourCredit || false
       },
       {
         'name': 'incomeTax',
@@ -198,27 +205,29 @@ let calcComponent = {
 
         salary.taxFreeYear = 0;
         salary.taxableYear = grossYear - salary.grossAllowance;
-        if (this.ruling.checked) {
-          let rulingIncome = getRulingIncome(this.year, this.ruling.choice);
-          if (salary.taxableYear > rulingIncome) {
-            salary.taxFreeYear = salary.taxableYear * 0.30;
-            salary.taxableYear -= salary.taxFreeYear;
-            if (salary.taxableYear < rulingIncome) { // For partial
-              salary.taxFreeYear = grossYear - rulingIncome;
-              salary.taxableYear = rulingIncome;
-            }
-          }
-        }
+        salary.taxFreeYear = salary.taxableYear * (1-constants.nominalExpenseRates[this.year]);
+
+        salary.taxableYear = getTaxableIncome(this.year, salary.taxableYear);
 
         salary.taxFreeYear = ~~(salary.taxFreeYear);
         salary.taxFree = ~~(salary.taxFreeYear / grossYear * 100);
         salary.taxableYear = ~~(salary.taxableYear);
-        salary.payrollTax = -1 * getPayrollTax(this.year, salary.taxableYear);
-        salary.socialTax = (salary.socialSecurity) ? -1 * getSocialTax(this.year, salary.taxableYear, salary.older) : 0;
         let socialCredit = getSocialCredit(this.year, salary.older, salary.socialSecurity);
         salary.generalCredit = socialCredit * getGeneralCredit(this.year, salary.taxableYear, salary.older);
+        
+        salary.taxableYearAfterGeneralCredit = salary.taxableYear-salary.generalCredit;
+        salary.payrollTax = -1 * getPayrollTax(this.year, salary.taxableYear);
+        let socialTaxBase = salary.taxableYear - 0.25*salary.taxableYear;
+        salary.socialTax = (salary.socialSecurity) ? -1 * getSocialTax(this.year, socialTaxBase, salary.older) : 0;
+        if (Math.abs(salary.socialTax) < 4186.68) {
+          salary.socialTax = -4186.68;
+        }
+        if (Math.abs(salary.socialTax) > 24962.76) {
+          salary.socialTax = -24962.76;
+        }
+        salary.generalCredit = socialCredit * getGeneralCredit(this.year, salary.taxableYear, salary.older);
         salary.labourCredit = socialCredit * getLabourCredit(this.year, salary.taxableYear, salary.older);
-        salary.incomeTax = ~~(salary.payrollTax + salary.socialTax + salary.generalCredit + salary.labourCredit);
+        salary.incomeTax = ~~(salary.payrollTax + salary.socialTax + salary.labourCredit);
         salary.incomeTax = (salary.incomeTax < 0) ? salary.incomeTax : 0;
         salary.netYear = salary.taxableYear + salary.incomeTax + salary.taxFreeYear;
         salary.netAllowance = (salary.allowance) ? ~~(salary.netYear * (0.08 / 1.08)) : 0;
@@ -235,28 +244,35 @@ let calcComponent = {
       return constants.rulingThreshold[year][ruling || 'normal'];
     }
 
+    function getTaxableIncome(year, salary) {
+      console.log(constants.nominalExpenseRates[year])
+      console.log(salary)
+      console.log(constants.nominalExpenseRates[year]*salary)
+      return constants.nominalExpenseRates[year]*salary;
+    }
+
     // Payroll Tax Rates (Loonbelasting)
     // https://www.belastingdienst.nl/bibliotheek/handboeken/html/boeken/HL/stappenplan-stap_7_loonbelasting_premie_volksverzekeringen.html
     function getPayrollTax(year, salary) {
-      return getRates(constants.payrollTax[year], salary, 'rate');
+      return getRates(constants.payrollTax[year], salary, 'rate', year);
     }
 
     // Social Security Contribution (Volksverzekeringen - AOW, Anw, Wlz)
     // https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/werk_en_inkomen/sociale_verzekeringen/premies_volks_en_werknemersverzekeringen/volksverzekeringen/volksverzekeringen?projectid=98f8c360-e92a-4fe2-aea6-27e9087ce4a1&projectid=98f8c360-e92a-4fe2-aea6-27e9087ce4a1
     function getSocialTax(year, salary, older) {
-      return getRates(constants.socialPercent[year], salary, (older) ? 'older' : 'social');
+      return getRates(constants.socialPercent[year], salary, (older) ? 'older' : 'social', year);
     }
 
     // General Tax Credit (Algemene Heffingskorting)
     // https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/heffingskortingen/algemene_heffingskorting/
     function getGeneralCredit(year, salary) {
-      return getRates(constants.generalCredit[year], salary, 'rate');
+      return getRates(constants.generalCredit[year], salary, 'rate', year);
     }
 
     // Labour Tax Credit (Arbeidskorting)
     // https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/heffingskortingen/arbeidskorting/
     function getLabourCredit(year, salary) {
-      return getRates(constants.labourCredit[year], salary, 'rate');
+      return getRates(constants.labourCredit[year], salary, 'rate', year);
     }
 
     // Social Security Contribution (Volksverzekeringen) Component of Tax Credit
@@ -279,7 +295,7 @@ let calcComponent = {
     }
 
     // https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/themaoverstijgend/brochures_en_publicaties/handboek-loonheffingen-2017
-    function getRates(brackets, salary, type) {
+    function getRates(brackets, taxableSalary, type, year) {
       let amount = 0,
         tax, delta, percent;
 
@@ -287,13 +303,13 @@ let calcComponent = {
         delta = (bracket.max) ? bracket.max - bracket.min : Infinity; // Consider infinity when no upper bound
         tax = (type && bracket[type]) ? bracket[type] : bracket['rate'];
         percent = (tax != 0 && tax > -1 && tax < 1); // Check if rate is percentage or fixed
-        if (salary <= delta) {
+        if (taxableSalary <= delta) {
           if (percent) {
-            amount += Math.trunc((salary * 100) * tax) / 100; // Round down at 2 decimal places
+            amount += Math.trunc((taxableSalary * 100) * tax) / 100; // Round down at 2 decimal places
           } else {
             amount = tax;
           }
-          //console.log(index, salary, delta, tax, percent, amount);
+          //console.log(index, taxableSalary, delta, tax, percent, amount);
           return true; // Break loop when reach last bracket
         } else {
           if (percent) {
@@ -301,7 +317,7 @@ let calcComponent = {
           } else {
             amount = tax;
           }
-          salary -= delta;
+          taxableSalary -= delta;
         }
       });
       return amount;
