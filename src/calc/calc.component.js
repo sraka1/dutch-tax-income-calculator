@@ -96,7 +96,7 @@ let calcComponent = {
       {
         'name': 'socialTax',
         'sign': '',
-        'title': 'Social Security Tax',
+        'title': 'Social Security Tax (ZZZS, ZPIZ, etc.)',
         'checked': !!+$location.search().socialTax || true
       },
       {
