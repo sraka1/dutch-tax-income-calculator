@@ -222,7 +222,7 @@ let calcComponent = {
         salary.payrollTax = -1 * getPayrollTax(this.year, salary.taxableYearAfterGeneralCredit);
         let socialTaxBase = salary.taxableYear - 0.25*salary.taxableYear;
         salary.socialTax = (salary.socialSecurity) ? -1 * getSocialTax(this.year, socialTaxBase, salary.older) : 0;
-        if (Math.abs(salary.socialTax) < 4264,32) {
+        if (Math.abs(salary.socialTax) < 4264.32) {
           salary.socialTax = -4264.32;
         }
         if (Math.abs(salary.socialTax) > 25424.52) {
