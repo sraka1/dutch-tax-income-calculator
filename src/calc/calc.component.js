@@ -11,9 +11,13 @@ let calcComponent = {
     }
 
     this.startFrom = $location.search().startFrom || 'Year';
+    this.startFromPrevious = $location.search().startFromPrevious || 'Year';
+    this.startFromSocialPrevious = $location.search().startFromSocialPrevious || 'Year';
 
     this.salary = {
       income: +$location.search().salary || 36000,
+      incomePrevious: +$location.search().salaryPrevious || 36000,
+      socialPrevious: +$location.search().socialPrevious || 4264,
       allowance: !!+$location.search().allowance || false,
       socialSecurity: (angular.isDefined($location.search().socialSecurity) && $location.search().socialSecurity === '0')?false:true,
       older: !!+$location.search().retired || false,
@@ -160,6 +164,8 @@ let calcComponent = {
         '$ctrl.year',
         '$ctrl.startFrom',
         '$ctrl.salary.income',
+        '$ctrl.salary.incomePrevious',
+        '$ctrl.salary.socialPrevious',
         '$ctrl.salary.allowance',
         '$ctrl.salary.socialSecurity',
         '$ctrl.salary.older',
@@ -173,7 +179,10 @@ let calcComponent = {
       () => {
         $location.search('year', +this.year);
         $location.search('startFrom', this.startFrom);
+        $location.search('startFromPrevious', this.startFromPrevious);
         $location.search('salary', +this.salary.income);
+        $location.search('salaryPrevious', +this.salary.incomePrevious);
+        $location.search('socialPrevious', +this.salary.socialPrevious);
         $location.search('allowance', +this.salary.allowance);
         $location.search('socialSecurity', +this.salary.socialSecurity);
         $location.search('retired', +this.salary.older);
@@ -196,12 +205,40 @@ let calcComponent = {
           grossYear = 0;
         }
 
+        salary.grossPreviousYear = salary.grossPreviousMonth = salary.grossPreviousWeek = salary.grossPreviousDay = salary.grossPreviousHour = 0;
+        salary['grossPrevious' + this.startFromPrevious] = salary.incomePrevious;
+        let grossPreviousYear = salary.grossPreviousYear + salary.grossPreviousMonth * 12 + salary.grossPreviousWeek * constants.workingWeeks;
+        grossPreviousYear += salary.grossPreviousDay * constants.workingDays + salary.grossPreviousHour * constants.workingWeeks * salary.hours;
+        if (!grossPreviousYear || grossPreviousYear < 0) {
+          grossPreviousYear = 0;
+        }
+
+        salary.socialPreviousYear = salary.socialPreviousMonth = salary.socialPreviousWeek = salary.socialPreviousDay = salary.socialPreviousHour = 0;
+        salary['socialPrevious' + this.startFromSocialPrevious] = salary.socialPrevious;
+        let socialPreviousYear = salary.socialPreviousYear + salary.socialPreviousMonth * 12 + salary.socialPreviousWeek * constants.workingWeeks;
+        socialPreviousYear += salary.socialPreviousDay * constants.workingDays + salary.socialPreviousHour * constants.workingWeeks * salary.hours;
+        if (!socialPreviousYear || socialPreviousYear < 0) {
+          socialPreviousYear = 0;
+        }
+
         salary.grossAllowance = (salary.allowance) ? ~~(grossYear * (0.08 / 1.08)) : 0; // Vakantiegeld (8%)
         salary.grossYear = ~~(grossYear);
         salary.grossMonth = ~~(grossYear / 12);
         salary.grossWeek = ~~(grossYear / constants.workingWeeks);
         salary.grossDay = ~~(grossYear / constants.workingDays);
-        salary.grossHour = ~~(grossYear / (constants.workingWeeks * salary.hours));
+        salary.grossHour =~~(grossYear / (constants.workingWeeks * salary.hours));
+
+        salary.grossPreviousYear = ~~(grossPreviousYear);
+        salary.grossPreviousMonth = ~~(grossPreviousYear / 12);
+        salary.grossPreviousWeek = ~~(grossPreviousYear / constants.workingWeeks);
+        salary.grossPreviousDay = ~~(grossPreviousYear / constants.workingDays);
+        salary.grossPreviousHour = ~~(grossPreviousYear / (constants.workingWeeks * salary.hours));
+
+        salary.socialPreviousYear = ~~(socialPreviousYear);
+        salary.socialPreviousMonth = ~~(socialPreviousYear / 12);
+        salary.socialPreviousWeek = ~~(socialPreviousYear / constants.workingWeeks);
+        salary.socialPreviousDay = ~~(socialPreviousYear / constants.workingDays);
+        salary.socialPreviousHour = ~~(socialPreviousYear / (constants.workingWeeks * salary.hours));
 
         salary.taxFreeYear = 0;
         salary.taxableYear = grossYear - salary.grossAllowance;
@@ -220,7 +257,8 @@ let calcComponent = {
           salary.taxableYearAfterGeneralCredit = 0;
         }
         salary.payrollTax = -1 * getPayrollTax(this.year, salary.taxableYearAfterGeneralCredit);
-        let socialTaxBase = salary.taxableYear - 0.25*salary.taxableYear;
+        salary.taxablePreviousYear = getTaxableIncome(this.year-1, salary.grossPreviousYear);
+        let socialTaxBase = (salary.taxablePreviousYear + salary.socialPreviousYear)*0.75;
         salary.socialTax = (salary.socialSecurity) ? -1 * getSocialTax(this.year, socialTaxBase, salary.older) : 0;
         if (Math.abs(salary.socialTax) < 4264.32) {
           salary.socialTax = -4264.32;

@@ -5,7 +5,7 @@ let rulingComponent = {
   template,
   controller: function($scope, $location) {
     this.year = constants.currentYear;
-    this.ruling = constants.rulingThreshold;
+    this.nominalExpenseRates = constants.nominalExpenseRates;
   }
 };
 

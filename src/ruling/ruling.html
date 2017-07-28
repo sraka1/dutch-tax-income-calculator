@@ -10,16 +10,19 @@
   </md-card>
   <md-card>
     <md-card-content>
-      <h2 class="md-title">About 30% Ruling</h2>
+      <h2 class="md-title">About Social Security Tax</h2>
       <p>
-        The salary criteria for the <b>30% ruling</b> as per January {{$ctrl.year}} are as follows:<br>
+        The current criteria for determining the Social Security Tax is as follows:<br>
       <ul>
-        <li>The salary amount does not matter if working with scientific research.</li>
-        <li>The annual taxable salary for an employee with a master’s degree and who is younger than 30 years, must be more than
-          <b>{{$ctrl.ruling[$ctrl.year].young | currency:"EUR ":0}}</b> ({{$ctrl.year - 1}}: {{$ctrl.ruling[$ctrl.year - 1].young | currency:"EUR ":0}}).
+        <li>Get the Tax Base for the previous year (in this case {{$ctrl.year - 1}}) - which is Previous Year Gross Income * {{$ctrl.nominalExpenseRates[$ctrl.year-1]}}</li>
+        <li>To that, add all the Social Tax paid in the previous year.
         </li>
-        <li>The annual taxable salary for other employees must be more than
-          <b>{{$ctrl.ruling[$ctrl.year].normal | currency:"EUR ":0}}</b> ({{$ctrl.year - 1}}: {{$ctrl.ruling[$ctrl.year - 1].normal | currency:"EUR ":0}}).
+        <li>
+          <b>Subtract 25% of that sum.</b>
+        </li>
+        <li>This is now the basis for calculating the Social Tax for year {{$ctrl.year}}. We multiply this base with 0.382 (38.2%) to get the total Yearly Social Tax to be paid this year.
+        </li>
+        <li><b>However, this tax has a minimum and maximum, so it cannot be lower than 4264.32€/year or higher than 25424.52€/year as of {{$ctrl.year}}.</b>
         </li>
       </ul>
       </p>

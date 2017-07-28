@@ -1,15 +1,18 @@
 {
-  "currentYear":"2018 (Vraničar Erman)",
+  "currentYear":"2018",
   "years":[
     "2017",
-    "2018 (Vraničar Erman)"
+    "2018",
+    "2019"
   ],
   "defaultWorkingHours":40,
   "workingWeeks":52,
   "workingDays":260,
   "nominalExpenseRates": {
+    "2016": 0.2,
     "2017": 0.2,
-    "2018 (Vraničar Erman)": 0.4
+    "2018": 0.4,
+    "2019": 0.4
   },
   "payrollTax":{
     "2017":[
@@ -19,7 +22,38 @@
         "rate":0.2
       }
     ],
-    "2018 (Vraničar Erman)":[
+    "2018":[
+      {
+        "bracket":1,
+        "min":0,
+        "max":8021.34,
+        "rate":0.16
+      },
+      {
+        "bracket":2,
+        "min":8021.35,
+        "max":20400,
+        "rate":0.27
+      },
+      {
+        "bracket":3,
+        "min":20400.01,
+        "max":48000,
+        "rate":0.34
+      },
+      {
+        "bracket":4,
+        "min":48000.01,
+        "max":70907.20,
+        "rate":0.39
+      },
+      {
+        "bracket":4,
+        "min":70907.21,
+        "rate":0.50
+      }
+    ],
+    "2019":[
       {
         "bracket":1,
         "min":0,
@@ -59,7 +93,14 @@
         "rate":0.382
       }
     ],
-    "2018 (Vraničar Erman)":[
+    "2018":[
+      {
+        "bracket":1,
+        "min":0,
+        "rate":0.382
+      }
+    ],
+    "2019":[
       {
         "bracket":1,
         "min":0,
@@ -75,7 +116,26 @@
         "rate":0
       }
     ],
-    "2018 (Vraničar Erman)":[
+    "2018":[
+      {
+        "bracket":1,
+        "min":0,
+        "max":11166.37,
+        "rate":6519.82
+      },
+      {
+        "bracket":2,
+        "min":11166.38,
+        "max":12570.89,
+        "rate":4418.64
+      },
+      {
+        "bracket":3,
+        "min":12570.90,
+        "rate":3302.70
+      }
+    ],
+    "2019":[
       {
         "bracket":1,
         "min":0,
@@ -103,7 +163,14 @@
         "rate":0
       }
     ],
-    "2018 (Vraničar Erman)":[
+    "2018":[
+      {
+        "bracket":1,
+        "min":0,
+        "rate":0
+      }
+    ],
+    "2019":[
       {
         "bracket":1,
         "min":0,

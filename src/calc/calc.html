@@ -15,6 +15,38 @@
       </md-select>
     </md-input-container>
   </div>
+  <div layout="row" layout-align="start" flex>
+    <md-input-container class="md-display-1 md-default-theme">
+      <label>Gross Income - Previous</label>
+      <input type="number" ng-model="$ctrl.salary.incomePrevious" min="1" autofocus required>
+    </md-input-container>
+    <md-input-container class="md-display-1 md-default-theme">
+      &nbsp;
+      <md-select ng-model="$ctrl.startFromPrevious">
+        <md-option value="Year">year</md-option>
+        <md-option value="Month">month</md-option>
+        <md-option value="Week">week</md-option>
+        <md-option value="Day">day</md-option>
+        <md-option value="Hour">hour</md-option>
+      </md-select>
+    </md-input-container>
+  </div>
+  <div layout="row" layout-align="start" flex>
+    <md-input-container class="md-display-1 md-default-theme">
+      <label>Social Taxes - Previous</label>
+      <input type="number" ng-model="$ctrl.salary.socialPrevious" min="1" autofocus required>
+    </md-input-container>
+    <md-input-container class="md-display-1 md-default-theme">
+      &nbsp;
+      <md-select ng-model="$ctrl.startFromSocialPrevious">
+        <md-option value="Year">year</md-option>
+        <md-option value="Month">month</md-option>
+        <md-option value="Week">week</md-option>
+        <md-option value="Day">day</md-option>
+        <md-option value="Hour">hour</md-option>
+      </md-select>
+    </md-input-container>
+  </div>
   <div layout-lg="row" layout-gt-lg="row" layout-align="start start">
     <div flex>
       <h3 class="md-display-1">Amounts</h3>
